@@ -1,0 +1,101 @@
+-- Restaurant Orders
+--What were the least and most ordered items? What categories were they in?
+
+--What do the highest spend orders look like? Which items did they buy and how much did they spend?
+
+--Were there certain times that had more or less orders?
+
+-- Which cuisines should we focus on developing more menu items for based on the data?
+
+
+--Details of the menu table--
+select * from restaurant_db.menu_items
+
+
+--Number of different menues--
+SELECT COUNT(DISTINCT menu_item_id) AS distinct_menu_items_count
+FROM restaurant_db.menu_items;
+--if it is a dimension table---
+SELECT COUNT(*) AS total_rows
+FROM restaurant_db.menu_items;
+
+--The cheapest & the most expensive menu
+select * from restaurant_db.menu_items
+ order by price
+
+ select * from restaurant_db.menu_items
+ order by price desc
+
+
+ --Number of Italian dishes
+ SELECT item_name 
+FROM restaurant_db.menu_items 
+WHERE category = 'Italian';
+
+SELECT count(*)
+FROM restaurant_db.menu_items 
+WHERE category = 'Italian';
+
+-- The most expensive Italian dish
+SELECT top 1 with ties item_name, price
+FROM restaurant_db.menu_items 
+WHERE category = 'Italian' order by price desc 
+
+-- The least expensive Italian dish
+SELECT top 1 with ties item_name, price
+FROM restaurant_db.menu_items 
+WHERE category = 'Italian' order by price 
+
+-- Dishes per category
+select category, 
+	COUNT (menu_item_id) as number_of_dishes from restaurant_db.menu_items 
+		group by category 
+
+select category, 
+	AVG (price) as AVG_price_dishes from restaurant_db.menu_items 
+		group by category 
+
+
+
+--Details of the order  table--
+select * from restaurant_db.order_details
+
+---Date range = From 2023 01.01 11:38:36 To 2023.03.31 22:15:48 ---
+select top 1 * from restaurant_db.order_details order by order_date, order_time
+select top 1 * from restaurant_db.order_details order by order_date desc, order_time desc
+select min(order_date) , max(order_date) from restaurant_db.order_details 
+
+--Number of orders---
+SELECT COUNT(DISTINCT order_id) AS distinct_order_items_count
+FROM restaurant_db.order_details;
+
+--Number of items---
+SELECT COUNT(*) 
+FROM restaurant_db.order_details;
+
+-- Number od dishes per Ordets
+--select order_id, 
+--	COUNT (order_details_id) as number_orders_per_order from restaurant_db.order_details  
+--		group by order_id order by number_orders_per_order desc
+
+select order_id, 
+	COUNT (item_id) as number_dishes_per_order from restaurant_db.order_details  
+		group by order_id order by number_dishes_per_order desc
+
+--orders witm more than 12 items---
+select top 12 with ties order_id, 
+	COUNT (item_id) as number_dishes_per_order from restaurant_db.order_details  
+		group by order_id order by number_dishes_per_order desc
+
+SELECT order_id,  COUNT (item_id) as number_dishes_per_order 
+	from restaurant_db.order_details  
+		group by order_id 
+		having COUNT (item_id) >12;
+
+
+
+SELECT COUNT(*) FROM 
+    (SELECT order_id
+    FROM restaurant_db.order_details
+    GROUP BY order_id
+    HAVING COUNT(item_id) > 12) AS number_orders;
